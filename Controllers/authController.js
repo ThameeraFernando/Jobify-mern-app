@@ -11,7 +11,17 @@ const register = async (req, res) => {
   //   res.send("register user.");
   //   try {
   const user = await User.create(req.body);
-  res.status(StatusCodes.OK).json({ user });
+  const token = user.createJWT();
+
+  res.status(StatusCodes.OK).json({
+    user: {
+      email: user.email,
+      lastName: user.lastName,
+      location: user.location,
+      name: user.name,
+    },
+    token,
+  });
   //   } catch (error) {
   //     // throw new Error({});
   //     // res.status(500).json({ msg: error });
