@@ -1,3 +1,4 @@
+// import cors from "cors";
 import express from "express";
 const app = express();
 import dotenv from "dotenv";
@@ -17,10 +18,21 @@ import jobsRouter from "./routes/jobsRoutes.js";
 //json middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// app.use(cors());
 //home
+console.log("hello");
+console.log("hello");
+console.log("hello");
+console.log("hello");
+console.log("hello");
+
 app.get("/", (req, res) => {
   //   throw new Error();
-  res.status(200).send("Welcome");
+  res.status(200).json({ msg: "Welcome" });
+});
+app.get("/api/v1", (req, res) => {
+  //   throw new Error();
+  res.status(200).json({ msg: "API" });
 });
 //auth router
 app.use("/api/v1/auth", authRouter);
