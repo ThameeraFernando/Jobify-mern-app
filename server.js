@@ -2,14 +2,18 @@ import express from "express";
 const app = express();
 import dotenv from "dotenv";
 dotenv.config();
+//import server error
+import "express-async-errors";
 //import middleware
 import notFoundMiddleware from "./middleware/not-found.js";
 import errorHandlerMiddleware from "./middleware/error-handler.js";
+
 //import db connection
 import ConnectDB from "./db/connect.js";
 //import routes
 import authRouter from "./routes/authRoutes.js";
 import jobsRouter from "./routes/jobsRoutes.js";
+
 //json middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
