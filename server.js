@@ -15,7 +15,8 @@ import ConnectDB from "./db/connect.js";
 //import routes
 import authRouter from "./routes/authRoutes.js";
 import jobsRouter from "./routes/jobsRoutes.js";
-
+//get auth middleware for jobRoutes
+import authenticateUser from "./middleware/auth.js";
 //json middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -41,7 +42,7 @@ app.get("/api/v1", (req, res) => {
 //auth router
 app.use("/api/v1/auth", authRouter);
 //jobs router
-app.use("/api/v1/jobs", jobsRouter);
+app.use("/api/v1/jobs", authenticateUser, jobsRouter);
 //middleware
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
