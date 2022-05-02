@@ -14,6 +14,7 @@ import {
   SETUP_USER_SUCCESS,
   SETUP_USER_ERROR,
   TOGGLE_SIDEBAR,
+  LOGOUT_USER,
 } from "./actions";
 import reducer from "./reducer";
 //get values from local storage
@@ -144,6 +145,12 @@ const AppProvider = ({ children }) => {
   const toggleSidebar = () => {
     dispatch({ type: TOGGLE_SIDEBAR });
   };
+  //logout user
+  const logoutUser = () => {
+    dispatch({ type: LOGOUT_USER });
+    removeUserFromLocalStorage();
+  };
+
   //children is the app we are rendering
   return (
     <AppContext.Provider
@@ -154,6 +161,7 @@ const AppProvider = ({ children }) => {
         loginUser,
         setupUser,
         toggleSidebar,
+        logoutUser,
       }}
     >
       {children}
