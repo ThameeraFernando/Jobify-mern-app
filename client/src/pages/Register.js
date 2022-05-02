@@ -15,8 +15,15 @@ const initialState = {
 };
 
 const Register = () => {
-  const { isLoading, showAlert, displayAlert, registerUser, user } =
-    useAppContext();
+  const {
+    isLoading,
+    showAlert,
+    displayAlert,
+    registerUser,
+    user,
+    loginUser,
+    setupUser,
+  } = useAppContext();
   const [values, setValues] = useState(initialState);
   //global state and use Navigator
   const navigate = useNavigate();
@@ -34,9 +41,19 @@ const Register = () => {
     }
     const currentUser = { name, email, password };
     if (isMember) {
-      console.log("already a member");
+      loginUser(currentUser);
+      // setupUser({
+      //   currentUser,
+      //   endPoint: "login",
+      //   alertText: "Login Successful! ",
+      // });
     } else {
       registerUser(currentUser);
+      // setupUser({
+      //   currentUser,
+      //   endPoint: "register",
+      //   alertText: "User Created! ",
+      // });
     }
     console.log(values);
   };
@@ -92,7 +109,7 @@ const Register = () => {
         <p>
           {values.isMember ? "Not yet a member?" : "Already a member?"}
           <button
-            type="button"
+            type="submit"
             onClick={toggleMember}
             disabled={isLoading}
             className="member-btn"
