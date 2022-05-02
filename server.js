@@ -8,7 +8,8 @@ import "express-async-errors";
 //import middleware
 import notFoundMiddleware from "./middleware/not-found.js";
 import errorHandlerMiddleware from "./middleware/error-handler.js";
-
+//import morgan
+import morgan from "morgan";
 //import db connection
 import ConnectDB from "./db/connect.js";
 //import routes
@@ -18,6 +19,9 @@ import jobsRouter from "./routes/jobsRoutes.js";
 //json middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+if (process.env.NODE_ENV !== "production") {
+  app.use(morgan("dev"));
+}
 // app.use(cors());
 //home
 console.log("hello");
