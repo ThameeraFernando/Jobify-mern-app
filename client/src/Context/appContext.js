@@ -13,6 +13,7 @@ import {
   SETUP_USER_BEGIN,
   SETUP_USER_SUCCESS,
   SETUP_USER_ERROR,
+  TOGGLE_SIDEBAR,
 } from "./actions";
 import reducer from "./reducer";
 //get values from local storage
@@ -29,6 +30,7 @@ export const initializeState = {
   token: token,
   userLocation: userLocation || "",
   jobLocation: userLocation || "",
+  showSidebar: false,
 };
 
 const AppContext = React.createContext();
@@ -138,11 +140,21 @@ const AppProvider = ({ children }) => {
     }
     clearAlert();
   };
-
+  //Toggle sidebar
+  const toggleSidebar = () => {
+    dispatch({ type: TOGGLE_SIDEBAR });
+  };
   //children is the app we are rendering
   return (
     <AppContext.Provider
-      value={{ ...state, displayAlert, registerUser, loginUser,setupUser }}
+      value={{
+        ...state,
+        displayAlert,
+        registerUser,
+        loginUser,
+        setupUser,
+        toggleSidebar,
+      }}
     >
       {children}
     </AppContext.Provider>
