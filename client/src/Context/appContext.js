@@ -7,6 +7,12 @@ import {
   REGISTER_USER_BEGIN,
   REGISTER_USER_SUCCESS,
   REGISTER_USER_ERROR,
+  LOGIN_USER_BEGIN,
+  LOGIN_USER_ERROR,
+  LOGIN_USER_SUCCESS,
+  SETUP_USER_BEGIN,
+  SETUP_USER_SUCCESS,
+  SETUP_USER_ERROR,
 } from "./actions";
 import reducer from "./reducer";
 //get values from local storage
@@ -79,9 +85,65 @@ const AppProvider = ({ children }) => {
       });
     }
   };
+  //login user
+  const loginUser = async (currentUser) => {
+    console.log(currentUser);
+    dispatch({ type: LOGIN_USER_BEGIN });
+    try {
+      const { data } = await axios.post("/api/v1/auth/login", currentUser);
+      const { user, token, location } = data;
+      dispatch({
+        type: LOGIN_USER_SUCCESS,
+        payload: {
+          user,
+          token,
+          location,
+        },
+      });
+      addUserToLocalStorage({ user, location, token });
+    } catch (error) {
+      dispatch({
+        type: LOGIN_USER_ERROR,
+        payload: { msg: error.response.data.msg },
+      });
+    }
+    clearAlert();
+  };
+
+  //SETUP for both login and register
+  const setupUser = async ({ currentUser, endPoint, alertText }) => {
+    console.log(currentUser);
+    dispatch({ type: SETUP_USER_BEGIN });
+    try {
+      const { data } = await axios.post(
+        `/api/v1/auth/${endPoint}`,
+        currentUser
+      );
+      const { user, token, location } = data;
+      dispatch({
+        type: SETUP_USER_SUCCESS,
+        payload: {
+          user,
+          token,
+          location,
+          alertText,
+        },
+      });
+      addUserToLocalStorage({ user, location, token });
+    } catch (error) {
+      dispatch({
+        type: SETUP_USER_ERROR,
+        payload: { msg: error.response.data.msg },
+      });
+    }
+    clearAlert();
+  };
+
   //children is the app we are rendering
   return (
-    <AppContext.Provider value={{ ...state, displayAlert, registerUser }}>
+    <AppContext.Provider
+      value={{ ...state, displayAlert, registerUser, loginUser,setupUser }}
+    >
       {children}
     </AppContext.Provider>
   );
