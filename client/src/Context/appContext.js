@@ -150,6 +150,9 @@ const AppProvider = ({ children }) => {
     dispatch({ type: LOGOUT_USER });
     removeUserFromLocalStorage();
   };
+  const updateUser = async (currentUser) => {
+    console.log(currentUser);
+  };
 
   //children is the app we are rendering
   return (
@@ -162,6 +165,7 @@ const AppProvider = ({ children }) => {
         setupUser,
         toggleSidebar,
         logoutUser,
+        updateUser,
       }}
     >
       {children}
