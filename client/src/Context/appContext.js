@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useContext } from "react";
+import React, { useReducer, useContext } from "react";
 //import axios library
 import axios from "axios";
 import {
@@ -23,6 +23,8 @@ import {
   CREATE_JOB_BEGIN,
   CREATE_JOB_SUCCESS,
   CREATE_JOB_ERROR,
+  GET_JOBS_BEGIN,
+  GET_JOBS_SUCCESS,
 } from "./actions";
 import reducer from "./reducer";
 //get values from local storage
@@ -40,16 +42,21 @@ export const initializeState = {
   userLocation: userLocation || "",
   showSidebar: false,
   //job status
-  jobLocation: userLocation || "",
+  // jobLocation: userLocation || "",
   isEditing: false,
   editJobId: "",
   position: "",
   company: "",
   jobLocation: userLocation || "",
   jobTypeOptions: ["full-time", "part-time", "remote", "internship"],
-  jobType: "fulltime",
+  jobType: "full-time",
   statusOptions: ["pending", "interview", "declined"],
   status: "pending",
+  //get job status
+  jobs: [],
+  totalJobs: 0,
+  numOfPages: 1,
+  page: 1,
 };
 
 const AppContext = React.createContext();
@@ -290,6 +297,42 @@ const AppProvider = ({ children }) => {
     }
     clearAlert();
   };
+  //get all jobs
+  const getJobs = async () => {
+    let url = `/jobs`;
+    dispatch({
+      type: GET_JOBS_BEGIN,
+    });
+    try {
+      const { data } = await authFetch(url);
+      const { jobs, totalJobs, numOfPages } = data;
+      dispatch({
+        type: GET_JOBS_SUCCESS,
+        payload: {
+          jobs,
+          totalJobs,
+          numOfPages,
+        },
+      });
+    } catch (error) {
+      console.log(error.response);
+      // logoutUser();
+    }
+    clearAlert();
+  };
+  //execute getalljobs
+  // useEffect(() => {
+  //   getJobs();
+  // }, []);
+
+  //set editJob
+  const setEditJob = (id) => {
+    console.log(`set edit job :${id}`);
+  };
+  //delete job
+  const deleteJob = (id) => {
+    console.log(`delete job :${id}`);
+  };
   //children is the app we are rendering
   return (
     <AppContext.Provider
@@ -305,6 +348,9 @@ const AppProvider = ({ children }) => {
         handleChange,
         clearValues,
         createJob,
+        getJobs,
+        setEditJob,
+        deleteJob,
       }}
     >
       {children}

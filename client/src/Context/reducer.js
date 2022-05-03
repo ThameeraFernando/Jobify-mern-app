@@ -21,6 +21,8 @@ import {
   CREATE_JOB_BEGIN,
   CREATE_JOB_SUCCESS,
   CREATE_JOB_ERROR,
+  GET_JOBS_BEGIN,
+  GET_JOBS_SUCCESS,
 } from "./actions";
 //import initial state
 import { initializeState } from "./appContext";
@@ -66,7 +68,7 @@ const reducer = (state, action) => {
       ...state,
       isLoading: false,
       showAlert: true,
-      alertText: "danger",
+      alertType: "danger",
       alertText: action.payload.msg,
     };
   }
@@ -95,7 +97,7 @@ const reducer = (state, action) => {
       ...state,
       isLoading: false,
       showAlert: true,
-      alertText: "danger",
+      alertType: "danger",
       alertText: action.payload.msg,
     };
   }
@@ -124,7 +126,7 @@ const reducer = (state, action) => {
       ...state,
       isLoading: false,
       showAlert: true,
-      alertText: "danger",
+      alertType: "danger",
       alertText: action.payload.msg,
     };
   }
@@ -214,6 +216,23 @@ const reducer = (state, action) => {
       showAlert: true,
       alertType: "danger",
       alertText: action.payload.msg,
+    };
+  }
+  //get all jobs
+  if (action.type === GET_JOBS_BEGIN) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: false,
+    };
+  }
+  if (action.type === GET_JOBS_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      jobs: action.payload.jobs,
+      numOfPages: action.payload.numOfPages,
+      totalJobs: action.payload.totalJobs,
     };
   }
   throw new Error(`no such action:${action.type}`);
