@@ -15,6 +15,9 @@ import {
   SETUP_USER_ERROR,
   TOGGLE_SIDEBAR,
   LOGOUT_USER,
+  UPDATE_USER_BEGIN,
+  UPDATE_USER_ERROR,
+  UPDATE_USER_SUCCESS,
 } from "./actions";
 import reducer from "./reducer";
 //get values from local storage
@@ -150,63 +153,83 @@ const AppProvider = ({ children }) => {
     dispatch({ type: LOGOUT_USER });
     removeUserFromLocalStorage();
   };
+  // console.log(currentUser);
+  //global setup
+  //axios.defaults.headers.common["Authorization"] = `Bearer ${state.token}`;
+  //we default set the authorization header
+  //but this is not good
+  //because we send authorization header with all the requests
+  //axios setup instance
+  const authFetch = axios.create({
+    baseURL: "/api/v1",
+    // headers: {
+    //   Authorization: `Bearer ${state.token}`,
+    // },
+    //we send headers in interceptors
+  });
+  //interceptors
+  //more like middleware
+  //we invoke functions before we send requests and receive responses
+  //useful to identify errors
+  //request interceptor
+  authFetch.interceptors.request.use(
+    (config) => {
+      config.headers.common["Authorization"] = `Bearer ${state.token}`;
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+  //response interceptor
+  authFetch.interceptors.response.use(
+    (response) => {
+      return response;
+    },
+    (error) => {
+      console.log(error.response);
+      if (error.response.status === 401) {
+        // console.log("AUTH ERROR");
+        logoutUser();
+      }
+      return Promise.reject(error);
+    }
+  );
+  // const { data } = await axios.patch(
+  //   "/api/v1/auth/updateUser",
+  //   currentUser,
+  //   {
+  //     headers: {
+  //       Authorization: `Bearer ${state.token}`,
+  //     },
+  //   }
+  // );
   const updateUser = async (currentUser) => {
-    // console.log(currentUser);
-    //global setup
-    //axios.defaults.headers.common["Authorization"] = `Bearer ${state.token}`;
-    //we default set the authorization header
-    //but this is not good
-    //because we send authorization header with all the requests
-    //axios setup instance
-    const authFetch = axios.create({
-      baseURL: "/api/v1",
-      // headers: {
-      //   Authorization: `Bearer ${state.token}`,
-      // },
-      //we send headers in interceptors
-    });
-    //interceptors
-    //more like middleware
-    //we invoke functions before we send requests and receive responses
-    //useful to identify errors
-    //request interceptor
-    authFetch.interceptors.request.use(
-      (config) => {
-        config.headers.common["Authorization"] = `Bearer ${state.token}`;
-        return config;
-      },
-      (error) => {
-        return Promise.reject(error);
-      }
-    );
-    //response interceptor
-    authFetch.interceptors.response.use(
-      (response) => {
-        return response;
-      },
-      (error) => {
-        console.log(error.response);
-        if (error.response.status === 401) {
-          console.log("AUTH ERROR");
-        }
-        return Promise.reject(error);
-      }
-    );
+    dispatch({ type: UPDATE_USER_BEGIN });
     try {
       const { data } = await authFetch.patch("auth/updateUser", currentUser);
-      // const { data } = await axios.patch(
-      //   "/api/v1/auth/updateUser",
-      //   currentUser,
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${state.token}`,
-      //     },
-      //   }
-      // );
-      console.log(data);
+      const { user, location, token } = data;
+      // console.log(data);
+      dispatch({
+        type: UPDATE_USER_SUCCESS,
+        payload: {
+          user,
+          location,
+          token,
+        },
+      });
+      addUserToLocalStorage({ user, location, token });
     } catch (error) {
-      console.log(error.response);
+      // console.log(error.response);
+
+      if (error.response.status !== 401) {
+        dispatch({
+          type: UPDATE_USER_ERROR,
+          payload: { msg: error.response.data.msg },
+        });
+      }
     }
+    clearAlert();
   };
 
   //children is the app we are rendering
