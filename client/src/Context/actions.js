@@ -21,3 +21,11 @@ export const LOGOUT_USER = "LOGOUT_USER";
 export const UPDATE_USER_BEGIN = "UPDATE_USER_BEGIN";
 export const UPDATE_USER_SUCCESS = "UPDATE_USER_SUCCESS";
 export const UPDATE_USER_ERROR = "UPDATE_USER_ERROR";
+//handle job states change
+export const HANDLE_CHANGE = "HANDLE_CHANGE";
+//clear job states values
+export const CLEAR_VALUES = "CLEAR_VALUES";
+//create job
+export const CREATE_JOB_BEGIN = "CREATE_JOB_BEGIN";
+export const CREATE_JOB_SUCCESS = "CREATE_JOB_SUCCESS";
+export const CREATE_JOB_ERROR = "CREATE_JOB_ERROR";
