@@ -151,7 +151,62 @@ const AppProvider = ({ children }) => {
     removeUserFromLocalStorage();
   };
   const updateUser = async (currentUser) => {
-    console.log(currentUser);
+    // console.log(currentUser);
+    //global setup
+    //axios.defaults.headers.common["Authorization"] = `Bearer ${state.token}`;
+    //we default set the authorization header
+    //but this is not good
+    //because we send authorization header with all the requests
+    //axios setup instance
+    const authFetch = axios.create({
+      baseURL: "/api/v1",
+      // headers: {
+      //   Authorization: `Bearer ${state.token}`,
+      // },
+      //we send headers in interceptors
+    });
+    //interceptors
+    //more like middleware
+    //we invoke functions before we send requests and receive responses
+    //useful to identify errors
+    //request interceptor
+    authFetch.interceptors.request.use(
+      (config) => {
+        config.headers.common["Authorization"] = `Bearer ${state.token}`;
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+    //response interceptor
+    authFetch.interceptors.response.use(
+      (response) => {
+        return response;
+      },
+      (error) => {
+        console.log(error.response);
+        if (error.response.status === 401) {
+          console.log("AUTH ERROR");
+        }
+        return Promise.reject(error);
+      }
+    );
+    try {
+      const { data } = await authFetch.patch("auth/updateUser", currentUser);
+      // const { data } = await axios.patch(
+      //   "/api/v1/auth/updateUser",
+      //   currentUser,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${state.token}`,
+      //     },
+      //   }
+      // );
+      console.log(data);
+    } catch (error) {
+      console.log(error.response);
+    }
   };
 
   //children is the app we are rendering
