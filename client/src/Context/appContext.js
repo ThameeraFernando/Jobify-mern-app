@@ -26,6 +26,10 @@ import {
   GET_JOBS_BEGIN,
   GET_JOBS_SUCCESS,
   SET_EDIT_JOB,
+  DELETE_JOB_BEGIN,
+  EDIT_JOB_BEGIN,
+  EDIT_JOB_ERROR,
+  EDIT_JOB_SUCCESS,
 } from "./actions";
 import reducer from "./reducer";
 //get values from local storage
@@ -332,11 +336,45 @@ const AppProvider = ({ children }) => {
     dispatch({ type: SET_EDIT_JOB, payload: { id } });
   };
   //edit job
-  const editJob = () => {
-    console.log("edit job");
+  const editJob = async () => {
+    dispatch({
+      type: EDIT_JOB_BEGIN,
+    });
+    try {
+      const { position, company, jobLocation, jobType, status } = state;
+      await authFetch.patch(`/jobs/${state.editJobId}`, {
+        position,
+        company,
+        jobLocation,
+        jobType,
+        status,
+      });
+      dispatch({
+        type: EDIT_JOB_SUCCESS,
+      });
+    } catch (error) {
+      if (error.response.status === 401) {
+        return;
+      }
+      dispatch({
+        type: EDIT_JOB_ERROR,
+        payload: {
+          msg: error.response.data.msg,
+        },
+      });
+    }
+    clearAlert();
+    // // console.log("edit job");
   };
   //delete job
-  const deleteJob = (id) => {
+  const deleteJob = async (id) => {
+    dispatch({ type: DELETE_JOB_BEGIN });
+    try {
+      await authFetch.delete(`/jobs/${id}`);
+      getJobs();
+    } catch (error) {
+      logoutUser();
+    }
     console.log(`delete job :${id}`);
   };
   //children is the app we are rendering
